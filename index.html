@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultimate Birthday Surprise 🎬</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Italianno&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+
+body{
+ background:lightblue;
+ color:#111;
+ text-align:center;
+ overflow:hidden;
+ transition:0.2s;
+}
+.inputBox{
+ background:rgba(255,255,255,0.6);
+ backdrop-filter:blur(10px);
+ padding:15px 20px;
+ border-radius:30px;
+ transition:0.3s;
+}
+
+/* glow when typing */
+.inputBox:focus-within{
+ box-shadow:0 0 15px rgba(0,0,0,0.2);
+ transform:scale(1.05);
+}
+@keyframes shake{
+ 0%{transform:translateX(0)}
+ 25%{transform:translateX(-6px)}
+ 50%{transform:translateX(6px)}
+ 75%{transform:translateX(-6px)}
+ 100%{transform:translateX(0)}
+}
+
+.shake{
+ animation:shake 0.4s;
+}
+.success{
+ background:green !important;
+ transform:scale(1.1);
+ transition:0.3s;
+}
+.screen{position:absolute;width:100%;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;transition:0.6s}
+.hidden{opacity:0;pointer-events:none}
+
+/* input */
+.inputBox{
+ background:rgba(255,255,255,0.6);
+ backdrop-filter:blur(10px);
+ padding:15px 20px;
+ border-radius:30px;
+}
+
+.inputBox input{
+ border:none;
+ outline:none;
+ background:transparent;
+ color:#111;
+ font-size:16px;
+}
+
+button{
+ padding:12px 25px;
+ border:none;
+ border-radius:30px;
+ background:#111;
+ color:#fff;
+ cursor:pointer;
+ transition:0.3s;
+}
+
+button:disabled{opacity:0.5;cursor:not-allowed}
+
+button.enabled{
+ box-shadow:0 0 15px #ff4d6d,0 0 30px #ff4d6d;
+ animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+ 0%{transform:scale(1)}
+ 50%{transform:scale(1.05)}
+ 100%{transform:scale(1)}
+}
+.arrow{
+ position:absolute;
+ top:50%;
+ transform:translateY(-50%);
+ font-size:26px;
+ cursor:pointer;
+ background:rgba(255,255,255,0.9);
+ border-radius:50%;
+ padding:8px 12px;
+ z-index:999; /* VERY IMPORTANT */
+}
+
+.leftBtn{
+ left:calc(50% - 160px);
+}
+
+.rightBtn{
+ right:calc(50% - 160px);
+}
+
+
+.gift{font-size:80px;animation:bounce 1s infinite alternate;cursor:pointer}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-20px)}}
+
+.carousel{position:relative;width:100%;height:70%;display:flex;align-items:center;justify-content:center}
+.slide{position:absolute;width:180px;height:300px;border-radius:20px;background-size:cover;background-position:center;transition:0.5s}
+.middle{transform:scale(1.1);z-index:3}
+.left{transform:translateX(-140px) scale(0.8);filter:blur(4px)}
+.right{transform:translateX(140px) scale(0.8);filter:blur(4px)}
+
+.arrow{position:absolute;top:50%;transform:translateY(-50%);font-size:28px;cursor:pointer}
+.leftBtn{left:20px}
+.rightBtn{right:20px}
+
+.msg{
+ margin:12px auto;
+ padding:16px 20px;
+ border-radius:16px;
+ background:#fff;
+ color:#111;
+ width:80%;
+ max-width:420px;
+ font-size:18px;
+ line-height:1.4;
+ box-shadow:0 6px 18px rgba(0,0,0,0.1);
+}
+
+.videoBox{width:260px;height:460px;border-radius:20px;overflow:hidden;z-index:2}
+video{width:100%;height:100%;object-fit:cover}
+
+#fw{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+
+.title{
+ font-family:'Italianno', cursive;
+ font-size:72px;
+ color:#000;
+ margin-bottom:25px;
+ letter-spacing:2px;
+ text-shadow:2px 2px 6px rgba(0,0,0,0.2);
+}
+
+.finalMsg{font-size:26px;padding:20px}
+
+</style>
+</head>
+
+<body>
+
+<div id="login" class="screen">
+<h2>Enter Secret 🔒</h2>
+<div class="inputBox">
+<input type="password" id="pass" placeholder="Password">
+<button onclick="togglePass()">👁</button>
+</div>
+<br>
+<button onclick="unlock()">Unlock</button>
+</div>
+
+<div id="giftScreen" class="screen hidden">
+<div class="gift" onclick="openGift()">🎁</div>
+</div>
+
+<div id="gallery" class="screen hidden">
+<h1 id="title" class="title"></h1>
+<div class="carousel">
+<div id="s0" class="slide"></div>
+<div id="s1" class="slide"></div>
+<div id="s2" class="slide"></div>
+<div class="arrow leftBtn" onclick="prev()">⬅️</div>
+<div class="arrow rightBtn" onclick="next()">➡️</div>
+</div>
+<br>
+<button onclick="nextStep()">Next</button>
+</div>
+
+<div id="chat" class="screen hidden">
+<div id="chatBox"></div>
+<br>
+<button id="videoBtn" onclick="goToVideo()" disabled>Play Final Surprise 🎥</button>
+</div>
+
+<div id="video" class="screen hidden">
+<canvas id="fw"></canvas>
+<div class="videoBox">
+<video controls id="videoPlayer">
+<source src="myvideo.mp4">
+</video>
+</div>
+<br>
+<button id="finalBtn" onclick="showFinal()" style="display:none;">Next ➡️</button>
+</div>
+</div>
+
+<div id="final" class="screen hidden">
+<div class="finalMsg">
+Happy Birthday Vaishu ❤️🎉<br>
+
+I really hope you loved the surprise! I just wanted to make your day a little more special and memorable 😊 You truly deserve all the happiness in the world today.<br>
+
+Enjoy every moment, celebrate with your loved ones, and don’t let anything bother you—this is your day, so just be your amazing, beautiful self ✨<br>
+
+Our friendship means so much to me, more than words can explain. I genuinely hope this bond stays strong forever 🤝❤️<br>
+
+From this year onward, I wish you live the life you’ve always dreamed of, achieve all your goals, and most importantly, have loads of fun 😜💫<br>
+
+Once again, happiest birthday Vaishu! Stay happy, stay blessed always 💖🎂<br>
+</div>
+</div>
+
+<script>
+const password="30032005";
+const friendName = "Vaishnavi💖";
+function togglePass(){
+ let p=document.getElementById("pass");
+ p.type = p.type === "password" ? "text" : "password";
+}
+function unlock(){
+ const input=document.getElementById("pass");
+ const btn=document.querySelector("#login button");
+
+ if(input.value===password){
+
+  // success animation
+  btn.classList.add("success");
+
+  setTimeout(()=>{
+   document.getElementById("login").classList.add("hidden");
+   document.getElementById("giftScreen").classList.remove("hidden");
+  },500);
+
+ }else{
+
+  // shake animation
+  input.classList.add("shake");
+
+  setTimeout(()=>{
+   input.classList.remove("shake");
+  },400);
+ }
+}
+let mouseStartX = 0;
+
+const carousel = document.querySelector(".carousel");
+
+carousel.addEventListener("mousedown", (e) => {
+ mouseStartX = e.clientX;
+});
+
+carousel.addEventListener("mouseup", (e) => {
+ let mouseEndX = e.clientX;
+
+ if (mouseEndX - mouseStartX > 50) {
+  prev();   // drag right
+ } else if (mouseStartX - mouseEndX > 50) {
+  next();   // drag left
+ }
+});
+
+let autoSlide;
+function openGift(){
+ document.getElementById("title").innerText = `Happy Birthday ${friendName}`;
+ document.getElementById("giftScreen").classList.add("hidden");
+ document.getElementById("gallery").classList.remove("hidden");
+ update();
+}
+
+const imgs=[
+ "photo1.jpg",
+ "photo2.jpg",
+ "photo3.jpg",
+ "photo4.jpg",
+ "photo5.jpg",
+ "photo6.jpg",
+ "photo7.jpg",
+ "photo8.jpg",
+ "photo9.jpg",
+ "photo10.jpg",
+ "photo11.jpg",
+ "photo12.jpg"
+];
+let i=0;
+
+function update(){
+ let l=(i-1+imgs.length)%imgs.length;
+ let r=(i+1)%imgs.length;
+ document.getElementById("s0").style.backgroundImage=`url(${imgs[l]})`;
+ document.getElementById("s1").style.backgroundImage=`url(${imgs[i]})`;
+ document.getElementById("s2").style.backgroundImage=`url(${imgs[r]})`;
+ document.getElementById("s0").className="slide left";
+ document.getElementById("s1").className="slide middle";
+ document.getElementById("s2").className="slide right";
+}
+
+function next(){i=(i+1)%imgs.length;update();}
+function prev(){i=(i-1+imgs.length)%imgs.length;update();}
+
+function nextStep(){
+ document.getElementById("gallery").classList.add("hidden");
+ document.getElementById("chat").classList.remove("hidden");
+ startChat();
+}
+
+const messages=["Hey...","Stay Tuned..","Funny Clips Ahead","Happy Birthday ❤️"];
+
+function startChat(){
+ let idx=0;
+ function send(){
+  if(idx<messages.length){
+   let div=document.createElement("div");
+   div.className="msg";
+   document.getElementById("chatBox").appendChild(div);
+   let text=messages[idx++];
+   let j=0;
+   function type(){
+    if(j<text.length){
+     div.innerHTML+=text[j++];
+     setTimeout(type,40);
+    }
+   }
+   type();
+   setTimeout(send,1500);
+  }else{
+   let btn=document.getElementById("videoBtn");
+   btn.disabled=false;
+   btn.classList.add("enabled");
+   heartbeat();
+  }
+ }
+ send();
+}
+
+let beat;
+function heartbeat(){
+ beat=setInterval(()=>{
+  document.body.style.transform="scale(1.01)";
+  setTimeout(()=>document.body.style.transform="scale(1)",150);
+ },800);
+}
+
+function stopHeartbeat(){
+ clearInterval(beat);
+ document.body.style.transform="scale(1)";
+}
+
+function goToVideo(){
+ stopHeartbeat();
+ document.getElementById("chat").classList.add("hidden");
+ document.getElementById("video").classList.remove("hidden");
+ startFireworks();
+}
+
+function startFireworks(){
+ const c=document.getElementById('fw');
+ const ctx=c.getContext('2d');
+ c.width=window.innerWidth;
+ c.height=window.innerHeight;
+ let p=[];
+ function burst(){
+  let x=Math.random()*c.width,y=Math.random()*c.height/2;
+  for(let i=0;i<30;i++){
+   p.push({x,y,dx:(Math.random()-0.5)*5,dy:(Math.random()-0.5)*5,life:80});
+  }
+ }
+ function draw(){
+  ctx.clearRect(0,0,c.width,c.height);
+  for(let k=0;k<p.length;k++){
+   let a=p[k];
+   a.x+=a.dx;
+   a.y+=a.dy;
+   a.life--;
+   ctx.beginPath();
+   ctx.arc(a.x,a.y,2,0,6.28);
+   ctx.fillStyle=`hsl(${Math.random()*360},100%,60%)`;
+   ctx.fill();
+   if(a.life<=0){
+    p.splice(k,1);
+    k--;
+   }
+  }
+  if(Math.random()<0.05)burst();
+  requestAnimationFrame(draw);
+ }
+ draw();
+}
+
+const videoPlayer=document.getElementById("videoPlayer");
+videoPlayer.onended=function(){
+ document.getElementById("finalBtn").style.display="inline-block";
+};
+
+function showFinal(){
+ document.getElementById("video").classList.add("hidden");
+ document.getElementById("final").classList.remove("hidden");
+}
+
+</script>
+
+</body>
+</html>
